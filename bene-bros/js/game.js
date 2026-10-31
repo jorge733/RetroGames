@@ -80,6 +80,9 @@
       this.menuIndex = 0;
       this.state = 'title';
       this.titleCam = 0;
+      this.lives = 3; this.score = 0; this.coins = 0; this.power = false; this.levelIndex = 0; this.checkpoint = null;
+      this.view3d = opts.view3d || null;
+      if (this.view3d) this.loadLevel(this.campaign[0]);   // decorado del menú en 3D
       if (opts.testMode) this.newGame(this.campaign);
       this.running = true;
       this.last = performance.now(); this.acc = 0;
@@ -241,11 +244,13 @@
       A.stopMusic();
       if (this.opts.testMode && this.opts.onExit) { this.opts.onExit(); return; }
       this.state = 'title';
+      if (this.view3d) { this.loadLevel(this.campaign[0]); this.titleCam = 0; }
     }
 
     updateTitle() {
       const inp = this.input;
       this.titleCam += 0.4;
+      if (this.view3d && this.level) this.cam = (this.titleCam * 0.8) % Math.max(1, this.W * T - VW);
       const custom = store.get('benebros:levels', []);
       const items = this.menuItems(custom);
       if (inp.pressed('down')) { this.menuIndex = (this.menuIndex + 1) % items.length; SFX.bump(); }
@@ -599,6 +604,7 @@
     render() {
       const ctx = this.ctx;
       ctx.imageSmoothingEnabled = false;
+      if (this.view3d) return this.render3d();
       if (this.state === 'title') return this.renderTitle();
       if (this.state === 'intro') return this.renderIntro();
       if (this.state === 'gameover' && this.timer > 0) return this.renderCard('FIN DEL JUEGO', ['PUNTOS: ' + this.score, 'RÉCORD: ' + this.best], '#e43b44');
@@ -644,9 +650,30 @@
       this.drawPlayer(cam);
 
       for (const q of this.particles) { ctx.fillStyle = q.color; ctx.fillRect(Math.round(q.x - cam), Math.round(q.y), q.size, q.size); }
-      for (const q of this.popups) G.textCenter(ctx, q.text, q.x - cam + 8, q.y, '#fff');
+      this.renderOverlay((x, y) => ({ x: x - cam, y }));
+    }
 
+    // Vista 3D: el mundo lo dibuja BB.View3D y aquí solo se pinta la interfaz encima.
+    render3d() {
+      const ctx = this.ctx, st = this.state;
+      const world = st === 'title' || st === 'play' || st === 'pause' || st === 'dying' || st === 'clear';
+      if (world) this.view3d.render(this);
+      ctx.clearRect(0, 0, VW, VH);
+      if (st === 'title') return this.renderTitle(true);
+      if (st === 'intro') return this.renderIntro();
+      if (st === 'gameover') return this.renderCard('FIN DEL JUEGO', ['PUNTOS: ' + this.score, 'RÉCORD: ' + this.best], '#e43b44');
+      if (st === 'win') return this.renderWin();
+      this.renderOverlay((x, y) => this.view3d.project(x, y));
+    }
+
+    renderOverlay(project) {
+      const ctx = this.ctx;
+      for (const q of this.popups) { const s = project(q.x + 8, q.y); G.textCenter(ctx, q.text, s.x, s.y, '#fff'); }
       this.renderHUD();
+      if (this.bossFight && this.boss && this.boss.alive) {
+        G.textCenter(ctx, 'REY BELLOTA', VW / 2, 14, '#f28fb8');
+        for (let i = 0; i < 3; i++) G.drawSprite(ctx, 'corazon', VW / 2 - 24 + i * 16, 18, { alpha: i < this.boss.hp ? 1 : 0.25 });
+      }
 
       if (this.state === 'pause') {
         ctx.fillStyle = 'rgba(26,28,44,.7)'; ctx.fillRect(0, 0, VW, VH);
@@ -694,10 +721,6 @@
           if (e.inv > 0 && (e.inv >> 2) % 2) break;
           G.drawSprite(ctx, (e.t >> 3) % 2 ? 'bellotin1' : 'bellotin2', x - 3, e.y - 4, { flip, flipY: dead, swap: 'rey', scale: 2 });
           if (!dead) G.drawSprite(ctx, 'corona', x + 5, e.y - 14);
-          if (this.bossFight) {
-            for (let i = 0; i < 3; i++) G.drawSprite(ctx, 'corazon', VW / 2 - 24 + i * 16, 18, { alpha: i < e.hp ? 1 : 0.25 });
-            G.textCenter(ctx, 'REY BELLOTA', VW / 2, 14, '#f28fb8');
-          }
           break;
         }
       }
@@ -715,11 +738,17 @@
       G.text(ctx, 'T ' + String(Math.ceil(this.time / 60)).padStart(3, '0'), VW - 34, 3, this.time < 60 * 60 ? '#e43b44' : '#f4f4f4');
     }
 
-    renderTitle() {
+    renderTitle(over3d) {
       const ctx = this.ctx, t = this.frame;
-      G.background(ctx, 'pradera', this.titleCam, VW, VH, t);
-      ctx.fillStyle = '#38b764'; ctx.fillRect(0, VH - 24, VW, 24);
-      ctx.fillStyle = '#a7f070'; ctx.fillRect(0, VH - 24, VW, 2);
+      if (over3d) {
+        const g = ctx.createLinearGradient(0, 0, 0, VH);
+        g.addColorStop(0, 'rgba(26,28,44,.55)'); g.addColorStop(0.45, 'rgba(26,28,44,.1)'); g.addColorStop(1, 'rgba(26,28,44,.6)');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+      } else {
+        G.background(ctx, 'pradera', this.titleCam, VW, VH, t);
+        ctx.fillStyle = '#38b764'; ctx.fillRect(0, VH - 24, VW, 24);
+        ctx.fillStyle = '#a7f070'; ctx.fillRect(0, VH - 24, VW, 2);
+      }
       // logo
       const title = 'BENE BROS';
       const colors = ['#e43b44', '#f7a23b', '#ffcd75', '#38b764', '#f4f4f4', '#41a6f6', '#7d6bd6', '#f28fb8', '#e43b44'];
@@ -730,11 +759,13 @@
         G.bigLetter(ctx, ch, tx + i * adv, y, colors[i], sc);
       });
       G.textCenter(ctx, 'LAS AVENTURAS DE SANTIAGO', VW / 2, 50, '#f4f4f4');
-      // Santiago corriendo
-      const sx = (t * 1.2) % (VW + 60) - 30;
-      G.drawSprite(ctx, ['santiRun1', 'santiRun2', 'santiIdle', 'santiRun2'][(t >> 3) % 4], sx, VH - 40);
-      G.drawSprite(ctx, (t >> 3) % 2 ? 'bellotin1' : 'bellotin2', sx - 40, VH - 40, { flip: true });
-      G.drawSprite(ctx, 'santiIdle', VW / 2 - 24, 64, { scale: 3 });
+      if (!over3d) {
+        // Santiago corriendo
+        const sx = (t * 1.2) % (VW + 60) - 30;
+        G.drawSprite(ctx, ['santiRun1', 'santiRun2', 'santiIdle', 'santiRun2'][(t >> 3) % 4], sx, VH - 40);
+        G.drawSprite(ctx, (t >> 3) % 2 ? 'bellotin1' : 'bellotin2', sx - 40, VH - 40, { flip: true });
+        G.drawSprite(ctx, 'santiIdle', VW / 2 - 24, 64, { scale: 3 });
+      }
 
       const items = this.menuItems(store.get('benebros:levels', []));
       if (this.menuIndex >= items.length) this.menuIndex = 0;
@@ -745,7 +776,7 @@
         G.textCenter(ctx, it.label, VW / 2, y, sel ? '#ffcd75' : '#f4f4f4', 1);
       });
       G.textCenter(ctx, 'RÉCORD ' + this.best, VW / 2, VH - 14, '#f4f4f4');
-      G.text(ctx, 'FLECHAS MOVER · Z SALTAR · X CORRER/LANZAR · M SONIDO', 8, VH - 6, '#1a1c2c', 1, null);
+      G.text(ctx, 'FLECHAS MOVER · Z SALTAR · X CORRER/LANZAR · M SONIDO', 8, VH - 6, over3d ? '#f4f4f4' : '#1a1c2c', 1, over3d ? '#1a1c2c' : null);
     }
 
     renderIntro() {

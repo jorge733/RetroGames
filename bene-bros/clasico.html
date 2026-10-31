@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bene Bros clásico (2D)</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="game">
+  <div class="stage">
+    <canvas id="game" width="320" height="192" aria-label="Bene Bros"></canvas>
+    <div class="corner">
+      <a href="index.html" title="Versión 3D">3D</a>
+      <a href="editor.html" title="Editor de niveles">✎ Editor</a>
+      <button id="mute" title="Sonido (M)">🔊</button>
+      <button id="full" title="Pantalla completa">⛶</button>
+    </div>
+  </div>
+  <div class="touch">
+    <div class="pad">
+      <button data-a="left" aria-label="Izquierda">◀</button>
+      <button data-a="right" aria-label="Derecha">▶</button>
+    </div>
+    <div class="mid"><button data-a="pause">PAUSA</button></div>
+    <div class="ab">
+      <button data-a="run" class="run">CORRER</button>
+      <button data-a="jump" class="jump">SALTAR</button>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/gfx.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/touch.js"></script>
+  <script>
+    const game = new BB.Game(document.getElementById('game'));
+    BB.game = game;
+    BB.bindTouch(game, document);
+    const mute = document.getElementById('mute');
+    const showMute = () => { mute.textContent = BB.Audio.isMuted() ? '🔇' : '🔊'; };
+    mute.addEventListener('click', () => { BB.Audio.unlock(); BB.Audio.setMuted(!BB.Audio.isMuted()); showMute(); });
+    addEventListener('keydown', (e) => { if (e.code === 'KeyM') setTimeout(showMute); });
+    showMute();
+    document.getElementById('full').addEventListener('click', () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+    });
+  </script>
+</body>
+</html>

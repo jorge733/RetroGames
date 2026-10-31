@@ -1,10 +1,25 @@
 # Bene Bros — Las aventuras de Santiago
 
-Juego de plataformas en 2D con gráficos pixelados, protagonizado por **Santiago**. Personajes, niveles, gráficos y música son originales.
+Juego de plataformas protagonizado por **Santiago**. Personajes, niveles, gráficos y música son originales.
 
 ## Jugar
 
-Abre `index.html` en el navegador (doble clic). No necesita internet ni instalar nada.
+- **`index.html`**: versión 3D (recomendada).
+- **`clasico.html`**: versión clásica con gráficos pixelados en 2D (también se abre sola si el navegador no admite 3D).
+
+No necesita internet ni instalar nada: basta con abrir el archivo en el navegador.
+
+### La versión 3D
+
+- Gráficos generados con Three.js:
+  - modelos 3D de Santiago y de todos los enemigos;
+  - materiales realistas (metal dorado, madera, piedra, ladrillo, lava brillante);
+  - sombras suaves, cielo, niebla de distancia y reflejos del entorno.
+- Cada mundo tiene su ambiente:
+  - **Pradera**: colinas, árboles, hierba, flores, nubes y montañas.
+  - **Cueva**: estalactitas y cristales que brillan, con Santiago iluminado por un farol.
+  - **Castillo**: columnas, ventanas, antorchas que parpadean y el resplandor de la lava.
+- Se juega exactamente igual que la versión 2D: comparten la misma física y los mismos niveles.
 
 | Acción | Teclado | Mando | Móvil |
 | --- | --- | --- | --- |
@@ -55,8 +70,11 @@ M  plataforma móvil ↔            V  plataforma móvil ↕
 ## Estructura
 
 ```
-index.html      juego
+index.html      juego en 3D
+clasico.html    juego en 2D (pixel art)
 editor.html     editor de niveles
+vendor/         Three.js r149 (licencia MIT, en THREE-LICENSE)
+js/view3d.js    vista 3D: modelos, materiales, luces, decorados y cámara
 js/data.js      paleta, sprites (dibujados como texto) y niveles
 js/gfx.js       fuente pixelada, tiles, fondos
 js/audio.js     efectos y música chiptune (Web Audio)
@@ -73,6 +91,7 @@ node tests/bene-bros-smoke.js
 
 Esta prueba (en la carpeta raíz del repositorio) abre el juego en Chromium y comprueba lo siguiente:
 
+- que la vista 3D dibuja el menú y los tres mundos;
 - el menú;
 - los tres niveles;
 - pisar enemigos, golpear bloques, la bellota dorada y el jefe;

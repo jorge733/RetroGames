@@ -2,7 +2,7 @@
 
 ## Bene Bros — Las aventuras de Santiago
 
-Juego de plataformas en 2D con gráficos pixelados y editor de niveles.
+Juego de plataformas en 3D (con versión clásica en 2D) y editor de niveles.
 
 - Jugar: abre `bene-bros/index.html` en el navegador.
 - Editor: `bene-bros/editor.html`.
