@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bene Bros — Editor de niveles</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="editor">
+  <header class="ed-top">
+    <h1>Bene Bros · Editor</h1>
+    <input id="name" maxlength="16" placeholder="Nombre del nivel">
+    <select id="theme" title="Ambiente">
+      <option value="pradera">Pradera</option>
+      <option value="cueva">Cueva</option>
+      <option value="castillo">Castillo</option>
+    </select>
+    <label class="hint">Ancho <input id="width" type="number" min="20" max="400" step="10"></label>
+    <label class="hint">Tiempo <input id="time" type="number" min="30" max="999" step="10"></label>
+    <button class="btn primary" id="test">▶ Probar</button>
+    <button class="btn" id="save">Guardar</button>
+    <button class="btn" id="new">Nuevo</button>
+    <select id="copy" title="Copiar un nivel del juego">
+      <option value="">Copiar nivel del juego…</option>
+    </select>
+    <button class="btn" id="export">Exportar</button>
+    <label class="btn">Importar<input id="import" type="file" accept=".json,application/json" hidden></label>
+    <a class="btn" href="index.html">← Volver al juego</a>
+  </header>
+  <main class="ed-main">
+    <aside>
+      <div class="palette" id="palette"></div>
+      <p class="hint">Clic: pintar · Clic derecho: borrar · Arrastra para pintar varias casillas. Solo puede haber un inicio (@) y una meta (!).</p>
+      <div class="levels-list">
+        <h3>Mis niveles guardados</h3>
+        <ul id="saved"></ul>
+        <p class="hint">Se juegan desde el menú del juego en «MIS NIVELES».</p>
+      </div>
+    </aside>
+    <section>
+      <div id="msg" class="msg"></div>
+      <div class="scroller"><canvas id="ed-canvas"></canvas></div>
+    </section>
+  </main>
+
+  <div class="test-overlay" id="overlay">
+    <div class="stage"><canvas id="test-canvas" width="320" height="192"></canvas></div>
+    <div class="touch">
+      <div class="pad">
+        <button data-a="left">◀</button>
+        <button data-a="right">▶</button>
+      </div>
+      <div class="mid"><button data-a="back">EDITOR</button></div>
+      <div class="ab">
+        <button data-a="run" class="run">CORRER</button>
+        <button data-a="jump" class="jump">SALTAR</button>
+      </div>
+    </div>
+    <p class="hint">Esc: volver al editor</p>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/gfx.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/touch.js"></script>
+  <script src="js/editor.js"></script>
+</body>
+</html>

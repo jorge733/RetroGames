@@ -1,3 +1,12 @@
+# RetroGames
+
+| Proyecto | Qué es | Cómo abrirlo |
+| --- | --- | --- |
+| **Bene Bros** | Juego de plataformas protagonizado por Santiago, con editor de niveles | `bene-bros/index.html` · [README](bene-bros/README.md) |
+| **CHISPA** | Consola retro de fantasía con cartuchos y editor | `index.html` (abajo) |
+
+---
+
 # CHISPA — consola retro de fantasía
 
 CHISPA es una consola retro que funciona en el navegador. Tiene su propio "hardware" virtual, sus propios cartuchos y un editor para crear juegos.

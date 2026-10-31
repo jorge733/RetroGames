@@ -1,0 +1,53 @@
+:root { --bg: #1a1c2c; --panel: #262b44; --line: #3a4466; --text: #f4f4f4; --muted: #94b0c2; --accent: #ffcd75; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, sans-serif; }
+body.game { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+
+.stage { position: relative; width: min(100vw, calc((100vh - var(--touch-h, 0px)) * 5 / 3)); aspect-ratio: 5 / 3; }
+#game { width: 100%; height: 100%; display: block; image-rendering: pixelated; image-rendering: crisp-edges; background: #000; }
+.corner { position: absolute; bottom: 6px; right: 6px; display: flex; gap: 6px; opacity: .55; }
+.corner:hover { opacity: 1; }
+.corner button, .corner a { background: rgba(26,28,44,.8); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; font: 14px system-ui; cursor: pointer; text-decoration: none; }
+
+/* controles táctiles */
+.touch { display: none; width: 100%; max-width: 900px; justify-content: space-between; align-items: center; padding: 10px 18px; height: var(--touch-h); }
+@media (pointer: coarse) { :root { --touch-h: 150px; } .touch { display: flex; } }
+.touch button { touch-action: none; border: 2px solid #3a4466; background: #262b44; color: var(--text); font-weight: 700; border-radius: 14px; }
+.touch button.down { background: var(--accent); color: var(--bg); }
+.pad { display: flex; gap: 10px; }
+.pad button { width: 70px; height: 70px; font-size: 26px; }
+.mid button { padding: 8px 14px; font-size: 12px; border-radius: 20px; }
+.ab { display: flex; gap: 14px; align-items: flex-end; }
+.ab button { width: 74px; height: 74px; border-radius: 50%; font-size: 15px; }
+.ab .jump { background: #b13e53; margin-bottom: 30px; }
+.ab .run { background: #3b5dc9; }
+
+/* editor */
+body.editor { padding: 0; }
+.ed-top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.ed-top h1 { font-size: 18px; margin: 0 12px 0 0; color: var(--accent); }
+.ed-top input, .ed-top select { font: inherit; background: #10121c; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+.ed-top input[type=number] { width: 80px; }
+.btn { font: inherit; font-size: 14px; background: #333c57; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; text-decoration: none; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
+.btn.danger { color: #e43b44; }
+.ed-main { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px; padding: 12px 14px; }
+@media (max-width: 760px) { .ed-main { grid-template-columns: minmax(0, 1fr); } }
+.palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; align-content: start; }
+.palette button { display: flex; align-items: center; gap: 6px; background: var(--panel); color: var(--text); border: 2px solid transparent; border-radius: 6px; padding: 4px; font: 12px system-ui; cursor: pointer; text-align: left; }
+.palette button.sel { border-color: var(--accent); }
+.palette canvas { width: 32px; height: 32px; image-rendering: pixelated; flex-shrink: 0; background: #41a6f6; border-radius: 3px; }
+.scroller { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: #000; }
+#ed-canvas { display: block; image-rendering: pixelated; cursor: crosshair; touch-action: none; }
+.hint { color: var(--muted); font-size: 13px; }
+.msg { min-height: 1.4em; color: #a7f070; font-size: 14px; }
+.msg.error { color: #e43b44; }
+.test-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.92); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+.test-overlay.show { display: flex; }
+.test-overlay .stage { width: min(96vw, calc((92vh - var(--touch-h, 0px)) * 5 / 3)); }
+.levels-list { margin-top: 14px; }
+.levels-list h3 { font-size: 14px; margin: 0 0 6px; }
+.levels-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.levels-list li { display: flex; gap: 6px; align-items: center; justify-content: space-between; background: var(--panel); border-radius: 6px; padding: 4px 8px; font-size: 13px; }
+.levels-list li button { font-size: 12px; padding: 2px 8px; }
